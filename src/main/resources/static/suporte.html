@@ -1,0 +1,363 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>UNIBRA - Suporte | DevTools e Status Codes</title>
+
+  <style>
+    :root{
+      --brand:#0b3d91;
+      --brand-2:#123a7a;
+      --bg:#f4f6f8;
+      --text:#1f2a37;
+      --muted:#5b6675;
+      --card:#ffffff;
+      --stroke:#e0e6ed;
+
+      --ok-bg:#e8f5e9;    --ok-bd:#a5d6a7;    --ok-tx:#1b5e20;
+      --warn-bg:#fff8e1;  --warn-bd:#ffe082;  --warn-tx:#7a5a00;
+      --err-bg:#ffebee;   --err-bd:#ef9a9a;   --err-tx:#7f1d1d;
+      --info-bg:#eef3fb;  --info-bd:#cfe0ff;  --info-tx:#0b3d91;
+    }
+
+    *{ box-sizing:border-box; }
+
+    body{
+      margin:0;
+      font-family: Arial, Helvetica, sans-serif;
+      background:var(--bg);
+      color:var(--text);
+      line-height:1.5;
+    }
+
+    header{
+      background: linear-gradient(90deg, var(--brand), var(--brand-2));
+      color:white;
+      padding:16px 22px;
+      display:flex;
+      align-items:center;
+      gap:14px;
+      box-shadow:0 2px 10px rgba(0,0,0,0.15);
+    }
+    header img{ height:46px; }
+
+    .header-text strong{ font-size:16px; }
+    .header-text small{
+      display:block;
+      opacity:0.9;
+      margin-top:2px;
+    }
+
+    .wrap{
+      max-width:1020px;
+      margin:22px auto;
+      padding:0 16px;
+    }
+
+    .hero{
+      background:var(--card);
+      border:1px solid var(--stroke);
+      border-radius:14px;
+      box-shadow:0 6px 18px rgba(0,0,0,0.06);
+      padding:18px;
+      display:flex;
+      gap:14px;
+      align-items:flex-start;
+      justify-content:space-between;
+      flex-wrap:wrap;
+    }
+
+    .hero h1{
+      margin:0;
+      color:var(--brand);
+      font-size:20px;
+    }
+    .hero p{
+      margin:6px 0 0 0;
+      color:var(--muted);
+      max-width:720px;
+    }
+
+    .actions{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      align-items:center;
+      margin-top:4px;
+    }
+
+    a.button{
+      display:inline-block;
+      text-decoration:none;
+      padding:10px 14px;
+      border-radius:10px;
+      font-weight:bold;
+      transition:0.2s;
+      font-size:14px;
+      border:1px solid transparent;
+    }
+    .btn-primary{ background:var(--brand); color:white; }
+    .btn-light{ background:white; color:var(--brand); border-color:var(--info-bd); }
+    a.button:hover{ opacity:0.92; transform:translateY(-1px); }
+
+    h2{
+      margin:18px 0 10px 0;
+      color:var(--brand);
+      font-size:18px;
+    }
+
+    .card{
+      background:var(--card);
+      border:1px solid var(--stroke);
+      border-radius:14px;
+      padding:14px;
+      box-shadow:0 4px 14px rgba(0,0,0,0.05);
+    }
+
+    .card.theme-info{ border-left:6px solid var(--brand); }
+    .card-title{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      margin-bottom:8px;
+    }
+
+    .pill{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:4px 10px;
+      border-radius:999px;
+      font-size:12px;
+      font-weight:bold;
+      border:1px solid var(--stroke);
+      background:white;
+      color:var(--text);
+      white-space:nowrap;
+    }
+
+    code{
+      background:var(--info-bg);
+      padding:2px 6px;
+      border-radius:8px;
+      border:1px solid var(--info-bd);
+    }
+
+    .callout{
+      margin-top:10px;
+      padding:10px 12px;
+      border-radius:12px;
+      border:1px solid var(--info-bd);
+      background:var(--info-bg);
+      color:var(--text);
+    }
+    .callout strong{ color:var(--brand); }
+
+    /* Tabela */
+    table{
+      width:100%;
+      border-collapse:collapse;
+      background:var(--card);
+      border:1px solid var(--stroke);
+      border-radius:14px;
+      overflow:hidden;
+      box-shadow:0 4px 14px rgba(0,0,0,0.05);
+    }
+    th, td{
+      text-align:left;
+      padding:10px 12px;
+      border-bottom:1px solid var(--stroke);
+      vertical-align:top;
+      font-size:14px;
+    }
+    th{
+      background:var(--info-bg);
+      color:var(--brand);
+      font-weight:bold;
+    }
+    tr:last-child td{ border-bottom:none; }
+
+    .chip{
+      display:inline-block;
+      padding:3px 8px;
+      border-radius:999px;
+      font-size:12px;
+      font-weight:bold;
+      border:1px solid var(--stroke);
+      background:white;
+    }
+    .chip-ok{ background:var(--ok-bg); border-color:var(--ok-bd); color:var(--ok-tx); }
+    .chip-warn{ background:var(--warn-bg); border-color:var(--warn-bd); color:var(--warn-tx); }
+    .chip-err{ background:var(--err-bg); border-color:var(--err-bd); color:var(--err-tx); }
+
+    footer{
+      text-align:center;
+      margin:16px 0 10px 0;
+      font-size:13px;
+      color:#777;
+    }
+  </style>
+</head>
+
+<body>
+
+<header>
+  <img src="/unibra-blue.png" alt="Logo UNIBRA">
+  <div class="header-text">
+    <strong>UNIBRA</strong>
+    <small>Programação Cliente/Servidor — Suporte do Laboratório</small>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <section class="hero">
+    <div>
+      <h1>Suporte: DevTools e Status Codes</h1>
+      <p>
+        Use este guia para identificar rapidamente o status code, o payload enviado e a resposta do servidor.
+      </p>
+    </div>
+
+    <div class="actions">
+      <a class="button btn-primary" href="/index.html">Voltar para o Mockup</a>
+    </div>
+  </section>
+
+  <h2>Passo a passo no DevTools</h2>
+  <div class="card theme-info">
+    <div class="card-title">
+      <span class="pill">PASSO A PASSO</span>
+      <strong>Como acompanhar as requisições HTTP</strong>
+    </div>
+
+    <ol style="margin:8px 0 0 18px;">
+      <li>Abra o DevTools (F12) e clique em <strong>Network</strong>.</li>
+      <li>No topo do Network, marque <strong>Preserve log</strong> (para não perder requisições ao recarregar).</li>
+      <li>Clique em um botão do mockup (ex.: Login Correto).</li>
+      <li>Na lista do Network, clique na requisição (ex.: <code>/login</code> ou <code>/enderecos</code>).</li>
+      <li>Aba <strong>Headers</strong>: veja o <strong>Status Code</strong> e headers (ex.: <code>access-token</code>).</li>
+      <li>Aba <strong>Payload</strong>: veja o JSON enviado (aparece em POST).</li>
+      <li>Aba <strong>Response</strong>: veja o corpo retornado (quando existir).</li>
+    </ol>
+
+  <h2>Status Codes mais comuns</h2>
+    <table>
+    <thead>
+        <tr>
+        <th>Código</th>
+        <th>Classe</th>
+        <th>Significado</th>
+        <th>Quando ocorre</th>
+        <th>O que observar</th>
+        </tr>
+    </thead>
+    <tbody>
+
+        <tr>
+        <td><strong>200</strong></td>
+        <td><span class="chip chip-ok">Sucesso</span></td>
+        <td>Requisição processada com sucesso.</td>
+        <td>GET retornando dados ou POST com resposta.</td>
+        <td>Veja o Response e headers.</td>
+        </tr>
+
+        <tr>
+        <td><strong>201</strong></td>
+        <td><span class="chip chip-ok">Sucesso</span></td>
+        <td>Recurso criado com sucesso.</td>
+        <td>POST de criação.</td>
+        <td>Verifique o objeto retornado.</td>
+        </tr>
+
+        <tr>
+        <td><strong>204</strong></td>
+        <td><span class="chip chip-ok">Sucesso</span></td>
+        <td>Sucesso sem conteúdo na resposta.</td>
+        <td>DELETE ou atualização sem retorno.</td>
+        <td>Response vazio (normal).</td>
+        </tr>
+
+        <tr>
+        <td><strong>400</strong></td>
+        <td><span class="chip chip-warn">Cliente</span></td>
+        <td>Requisição inválida.</td>
+        <td>JSON errado ou campo faltando.</td>
+        <td>Confira Payload e validações.</td>
+        </tr>
+
+        <tr>
+        <td><strong>401</strong></td>
+        <td><span class="chip chip-warn">Cliente</span></td>
+        <td>Não autenticado.</td>
+        <td>Credenciais ou token inválidos.</td>
+        <td>Verifique login/token.</td>
+        </tr>
+
+        <tr>
+        <td><strong>403</strong></td>
+        <td><span class="chip chip-warn">Cliente</span></td>
+        <td>Acesso proibido.</td>
+        <td>Usuário sem permissão.</td>
+        <td>Ver regras de autorização.</td>
+        </tr>
+
+        <tr>
+        <td><strong>404</strong></td>
+        <td><span class="chip chip-warn">Cliente</span></td>
+        <td>Recurso não encontrado.</td>
+        <td>Endpoint inexistente.</td>
+        <td>Confira URL e método.</td>
+        </tr>
+
+        <tr>
+        <td><strong>409</strong></td>
+        <td><span class="chip chip-warn">Cliente</span></td>
+        <td>Conflito de estado.</td>
+        <td>Cadastro duplicado ou regra de negócio.</td>
+        <td>Veja mensagem de erro.</td>
+        </tr>
+
+        <tr>
+        <td><strong>415</strong></td>
+        <td><span class="chip chip-warn">Cliente</span></td>
+        <td>Tipo de mídia não suportado.</td>
+        <td>Faltou <code>Content-Type: application/json</code>.</td>
+        <td>Corrigir headers.</td>
+        </tr>
+
+        <tr>
+        <td><strong>422</strong></td>
+        <td><span class="chip chip-warn">Cliente</span></td>
+        <td>Entidade inválida.</td>
+        <td>Erro de validação de campos.</td>
+        <td>Veja mensagem de validação.</td>
+        </tr>
+
+        <tr>
+        <td><strong>500</strong></td>
+        <td><span class="chip chip-err">Servidor</span></td>
+        <td>Erro interno do servidor.</td>
+        <td>Exceção no backend.</td>
+        <td>Ver log do Spring.</td>
+        </tr>
+
+        <tr>
+        <td><strong>503</strong></td>
+        <td><span class="chip chip-err">Servidor</span></td>
+        <td>Serviço indisponível.</td>
+        <td>Servidor fora ou sobrecarregado.</td>
+        <td>Tentar novamente.</td>
+        </tr>
+
+    </tbody>
+    </table>
+
+  <footer>
+    Professor Me. Francisco Erberto
+  </footer>
+</div>
+
+</body>
+</html>
